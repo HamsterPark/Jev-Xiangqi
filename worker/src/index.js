@@ -6,6 +6,7 @@ const DEFAULT_ORIGIN = 'https://hamsterpark.github.io';
 const CLASSIC_META = createInitialPosition({ width: 9, height: 10 }).meta;
 const MAX_REQUEST_BYTES = 16 * 1024;
 const MAX_JEV_BYTES = 32 * 1024;
+const JEV_QUOTA_ERROR = 'Jev 今日额度已用完，请稍后再试';
 const CLASSIC_TYPES = new Set(['g', 'a', 'e', 'h', 'r', 'c', 'p']);
 const XIANGQI_NAMES = Object.freeze({ g: '将', a: '士', e: '象', h: '马', r: '车', c: '炮', p: '兵' });
 
@@ -148,12 +149,17 @@ async function askJev(env, modelState, criteria, instructions, history) {
   } catch {
     return json({ error: 'Jev is temporarily unavailable' }, 502);
   }
+  if (upstream.status === 429) return json({ error: JEV_QUOTA_ERROR }, 429);
   if (!upstream.ok) return json({ error: 'Jev request failed' }, 502);
   let result;
   try {
     result = await upstream.json();
   } catch {
     return json({ error: 'Invalid Jev response' }, 502);
+  }
+  if (result?.code !== 0 && typeof result?.message === 'string' &&
+    /today['’]s request limit has been reached/i.test(result.message)) {
+    return json({ error: JEV_QUOTA_ERROR }, 429);
   }
   const answer = result?.code === 0 ? result.data?.answers?.move : null;
   const move = answer?.choice;

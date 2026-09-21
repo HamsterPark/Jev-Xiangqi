@@ -252,7 +252,10 @@ async function askJev() {
       }),
       signal: controller.signal,
     });
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    if (!response.ok) {
+      const failure = await response.json().catch(() => null);
+      throw new Error(response.status === 429 ? failure?.error || 'Jev 今日额度已用完，请稍后再试。' : `HTTP ${response.status}`);
+    }
     const data = await response.json();
     if (currentGeneration !== generation) return;
     const move = choices.find((item) => classicMoveId(item) === data.move);
@@ -261,7 +264,7 @@ async function askJev() {
     playMove(move, BLACK);
   } catch (error) {
     if (currentGeneration !== generation) return;
-    connectionError = error.name === 'AbortError' ? '连接超时，请重试。' : '连接失败，请重试。';
+    connectionError = error.name === 'AbortError' ? '连接超时，请重试。' : error.message.startsWith('Jev 今日额度') ? error.message : '连接失败，请重试。';
     retryButton.hidden = false;
   } finally {
     clearTimeout(timeout);

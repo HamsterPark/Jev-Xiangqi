@@ -31,4 +31,6 @@ The Worker accepts only `game: "xiangqi"` and recomputes every legal black move 
 
 The success response is `{ "move": "...", "confidence": 0.67, "probabilities": { "...": 0.67 } }`. If only one move is available, the Worker returns it without an upstream call and sets `confidence` to `null`.
 
+If Jev reports that its daily request quota is exhausted, the Worker returns HTTP 429 with a fixed Chinese error message. Upstream error details and the credential are never sent to the browser.
+
 Run `npm test` in this directory to check validation and Jev response handling without a real key.

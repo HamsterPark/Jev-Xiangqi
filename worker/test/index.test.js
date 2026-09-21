@@ -62,6 +62,26 @@ test('rejects Jev output outside the generated legal options', async () => {
   }
 });
 
+test('maps Jev daily quota responses to a safe public 429', async () => {
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async () => Response.json({
+    code: 42901,
+    message: "Today's request limit has been reached. Please try again tomorrow. private upstream details",
+    data: null,
+  });
+  try {
+    const response = await request(xiangqiInput());
+    assert.equal(response.status, 429);
+    assert.equal(response.headers.get('Access-Control-Allow-Origin'), ORIGIN);
+    const body = await response.text();
+    assert.deepEqual(JSON.parse(body), { error: 'Jev 今日额度已用完，请稍后再试' });
+    assert.equal(body.includes('private upstream details'), false);
+    assert.equal(body.includes(ENV.JEV_API_KEY), false);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
 test('blocks unapproved origins and applies rate limit', async () => {
   const other = await request(xiangqiInput(), { headers: { Origin: 'https://attacker.example' } });
   assert.equal(other.status, 403);
