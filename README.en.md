@@ -28,3 +28,5 @@ npm run build:exe
 `start:desktop` runs the app locally; `build:exe` produces the portable Windows x64 build. The Xiangqi web version remains on [GitHub Pages](https://hamsterpark.github.io/Jev-Xiangqi/); it requires your own Worker, as described in [`worker/README.md`](worker/README.md).
 
 Xiangqi's initial board and basic moves build on the same author's [Better-Xiangqi](https://github.com/HamsterPark/Better-Xiangqi). The Huarong Dao rules and path guidance come from [Jev-Huarongdao](https://github.com/HamsterPark/Jev-Huarongdao). This repository is [MIT licensed](LICENSE).
+
+Development collaboration: HamsterPark and OpenAI Codex (AI co-author). This credit acknowledges Codex's assistance with the desktop app, bilingual interface, and Huarong Dao race; it does not change project maintenance or the MIT license.

@@ -28,3 +28,5 @@ npm run build:exe
 `start:desktop` 用于本地调试，`build:exe` 生成 Windows x64 便携版。网页版象棋仍在 [GitHub Pages](https://hamsterpark.github.io/Jev-Xiangqi/)；它需要自行部署 Worker，详见 [`worker/README.md`](worker/README.md)。
 
 象棋的初始棋盘和基础走法基于同一作者的 [Better-Xiangqi](https://github.com/HamsterPark/Better-Xiangqi)。华容道规则与路径引导逻辑来自 [Jev-Huarongdao](https://github.com/HamsterPark/Jev-Huarongdao)。本仓库采用 [MIT 许可证](LICENSE)。
+
+开发协作：HamsterPark 与 OpenAI Codex（AI 共同作者）。此署名记录 Codex 对桌面版、双语界面和华容道竞速功能的协助，不改变项目的维护归属或 MIT 许可。
