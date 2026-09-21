@@ -14,4 +14,7 @@ contextBridge.exposeInMainWorld('jevDesktop', Object.freeze({
   startRace: () => invoke('jev:start-race'),
   playRaceMove: (moveId) => invoke('jev:play-race-move', moveId),
   requestRaceMove: () => invoke('jev:request-race-move'),
+  startGomoku: () => invoke('jev:start-gomoku'),
+  playGomokuMove: (x, y) => invoke('jev:play-gomoku-move', { x, y }),
+  requestGomokuMove: () => invoke('jev:request-gomoku-move'),
 }));

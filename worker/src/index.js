@@ -1,4 +1,4 @@
-import { getClassicLegalMoves } from '../../assets/js/xiangqi-classic.js';
+import { getClassicLegalMoves, isInClassicCheck } from '../../assets/js/xiangqi-classic.js';
 import { createInitialPosition } from '../../assets/js/setup.js';
 
 const JEV_URL = 'https://www.jevai.org/api/v1/decisions';
@@ -9,7 +9,19 @@ const MAX_JEV_BYTES = 32 * 1024;
 const JEV_QUOTA_ERROR = 'Jev 今日额度已用完，请稍后再试';
 const JEV_AUTH_ERROR = 'Jev API key 无效或无权访问，请检查密钥。';
 const CLASSIC_TYPES = new Set(['g', 'a', 'e', 'h', 'r', 'c', 'p']);
-const XIANGQI_NAMES = Object.freeze({ g: '将', a: '士', e: '象', h: '马', r: '车', c: '炮', p: '兵' });
+const XIANGQI_NAMES = Object.freeze({
+  g: 'general', a: 'advisor', e: 'elephant', h: 'horse', r: 'rook', c: 'cannon', p: 'pawn',
+});
+const XIANGQI_RULES = Object.freeze([
+  'General (g): one square orthogonally within its own palace; the generals may not face each other on an open file.',
+  'Advisor (a): one square diagonally within its own palace.',
+  'Elephant (e): two squares diagonally; its midpoint must be empty and it cannot cross the river.',
+  'Horse (h): one square orthogonally then one diagonally outward; an occupied adjacent orthogonal leg blocks it.',
+  'Rook (r): any number of empty squares orthogonally, capturing the first enemy in its path.',
+  'Cannon (c): moves through empty squares orthogonally; a capture requires exactly one intervening piece as a screen.',
+  'Pawn (p): one square forward; after crossing the river it may also move one square sideways, but never backward.',
+  'Every candidate is already legal: it does not leave the moving side in check or the generals facing on an open file.',
+]);
 
 function json(body, status = 200, origin = null) {
   const headers = { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' };
@@ -101,18 +113,22 @@ function validateXiangqi(state) {
     const piece = state.board[fromY]?.[fromX];
     const target = state.board[toY]?.[toX];
     if (!piece || piece.color !== 'black' || Object.hasOwn(criteria, id)) throw new Error('Invalid legal move generation');
-    criteria[id] = `${XIANGQI_NAMES[piece.type]} ${fromX},${fromY} → ${toX},${toY}${target ? `，吃${XIANGQI_NAMES[target.type]}` : ''}`;
+    criteria[id] = `Black ${XIANGQI_NAMES[piece.type]} from (${fromX},${fromY}) to (${toX},${toY}); ${target ? `captures red ${XIANGQI_NAMES[target.type]}` : 'no capture'}.`;
   }
   return {
     criteria,
     modelState: {
-      game: '中国象棋，标准 9×10 棋盘',
-      goal: '黑方争取吃掉红将，同时保护己方将。棋盘坐标 x 从左到右 0–8，y 从上到下 0–9。',
+      game: 'Standard Xiangqi on a 9x10 board',
+      goal: 'Win as black by capturing the red general or leaving red with no legal move. With no legal move, red loses by checkmate if in check and by stalemate otherwise. The same conditions can make black lose.',
       side_to_move: 'black',
+      coordinates: 'board[y][x], with x=0..8 left to right and y=0..9 top to bottom. Black starts at the top and advances toward larger y; red starts at the bottom and advances toward smaller y. The river lies between rows 4 and 5; each palace occupies columns 3..5 and its own back three rows.',
+      piece_codes: XIANGQI_NAMES,
+      rules: XIANGQI_RULES,
       board: state.board,
       last_move: state.lastMove || null,
+      black_in_check: isInClassicCheck({ board: state.board, width: 9, height: 10, meta: CLASSIC_META }, 'black'),
     },
-    instructions: '你执黑。根据当前局面选择一个有利的合法着法。考虑将军、吃子、应将和避免己方将被吃。只从给出的候选着法中选一个。',
+    instructions: 'You play black. Study the full board and choose exactly one move ID from the complete legal candidate list. Consider checks, forced wins by capture/checkmate/stalemate, the opponent\'s likely replies, and the safety of your general and other pieces. The descriptions explain moves; they are not rankings or scores.',
   };
 }
 

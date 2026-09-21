@@ -10,7 +10,7 @@ const ENGLISH_PIECES = {
 };
 const COPY = {
   zh: {
-    pageTitle: 'Jev 华容道赛跑', brand: '棋局实验室 ↗', navigation: '游戏导航', xiangqi: '中国象棋', race: '华容道赛跑',
+    pageTitle: 'Jev 华容道赛跑', brand: '棋局实验室 ↗', navigation: '游戏导航', xiangqi: '中国象棋', race: '华容道赛跑', gomoku: '五子棋',
     headlineStart: '同一起点，', headlineEnd: '谁先突围？', intro: '你和 Jev 各有一块独立的华容道棋盘，从相同的“横刀立马”开局出发。你先走，双方严格轮流，每回合只滑动一枚棋子一格。先让曹操到达底部中央出口的一方获胜。',
     guidance: 'Jev 的候选走法由离线最短路径引导，再由 Jev 在其中选择；这是路径引导的对手，不是无辅助解题。', arena: '华容道双棋盘赛跑',
     leftBoard: '左侧棋盘', rightBoard: '右侧棋盘', you: '你', exit: '出 口', waiting: '等待', yourTurn: '你的回合', jevTurn: 'Jev 的回合', finished: '已结束',
@@ -40,7 +40,7 @@ const COPY = {
     U: '上', D: '下', L: '左', R: '右',
   },
   en: {
-    pageTitle: 'Jev Huarong Dao Race', brand: 'Game Lab ↗', navigation: 'Game navigation', xiangqi: 'Xiangqi', race: 'Huarong Dao Race',
+    pageTitle: 'Jev Huarong Dao Race', brand: 'Game Lab ↗', navigation: 'Game navigation', xiangqi: 'Xiangqi', race: 'Huarong Dao Race', gomoku: 'Gomoku',
     headlineStart: 'Same start. ', headlineEnd: 'Who escapes first?', intro: 'You and Jev each have an independent Huarong Dao board with the same classic opening. You move first, then alternate strictly. Slide exactly one piece by one cell per turn. The first to bring Cao Cao to the bottom-center exit wins.',
     guidance: 'Jev chooses among moves guided by a precomputed shortest path. This is a path-guided opponent, not an unaided puzzle solve.', arena: 'Two-board Huarong Dao race',
     leftBoard: 'Left board', rightBoard: 'Right board', you: 'You', exit: 'EXIT', waiting: 'Waiting', yourTurn: 'Your turn', jevTurn: "Jev's turn", finished: 'Finished',

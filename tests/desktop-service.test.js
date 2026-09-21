@@ -132,3 +132,52 @@ test('Huarongdao race rejects illegal moves and leaves Jev turn unchanged on API
     globalThis.fetch = originalFetch;
   }
 });
+
+test('Gomoku uses the shared in-memory key and lets Jev choose a legal reply', async () => {
+  const service = createDesktopService();
+  service.setKey(KEY);
+  const opening = service.startGomoku();
+  assert.equal(opening.board.length, 15);
+  assert.equal(opening.turn, 'player');
+  const afterPlayer = service.playGomokuMove(7, 7);
+  assert.equal(afterPlayer.turn, 'jev');
+  assert.equal(afterPlayer.board[7][7], 'player');
+  const originalFetch = globalThis.fetch;
+  let offered;
+  globalThis.fetch = async (url, options) => {
+    assert.equal(url, 'https://www.jevai.org/api/v1/decisions');
+    assert.equal(options.headers.Authorization, `Bearer ${KEY}`);
+    const body = JSON.parse(options.body);
+    offered = Object.keys(body.questions.move.criteria);
+    assert.equal(offered.length, 224);
+    return Response.json({ code: 0, data: { answers: { move: { choice: offered[0] } } } });
+  };
+  try {
+    const result = await service.requestGomokuMove();
+    assert.equal(result.state.turn, 'player');
+    assert.equal(result.state.moves.length, 2);
+    assert.equal(result.state.board[result.move.y][result.move.x], 'jev');
+    assert.equal(JSON.stringify(result).includes(KEY), false);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
+test('Gomoku rejects illegal player moves and preserves Jev turn on API error', async () => {
+  const service = createDesktopService();
+  service.setKey(KEY);
+  service.startGomoku();
+  assert.throws(() => service.playGomokuMove(-1, 0), /五子棋落点无效/);
+  service.playGomokuMove(7, 7);
+  assert.throws(() => service.playGomokuMove(8, 7), /五子棋落点无效/);
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async () => new Response('', { status: 429 });
+  try {
+    await assert.rejects(service.requestGomokuMove(), /Jev 今日额度/);
+    await assert.rejects(service.requestGomokuMove(), /Jev 今日额度/);
+    globalThis.fetch = async () => Response.json({ code: 42901, message: "Today's request limit has been reached" });
+    await assert.rejects(service.requestGomokuMove(), /Jev 今日额度/);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});

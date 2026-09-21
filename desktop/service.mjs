@@ -1,5 +1,7 @@
 import worker from '../worker/src/index.js';
 import { createRaceState, playRaceMove, requestJevMove } from '../assets/js/huarongdao-race.js';
+import { createGomokuState, playGomokuMove } from '../assets/js/gomoku-core.js';
+import { requestJevGomokuMove } from '../assets/js/gomoku-jev.js';
 
 const LOCAL_ORIGIN = 'https://hamsterpark.github.io';
 const LOCAL_URL = 'https://desktop.jev-xiangqi.invalid/api/move';
@@ -13,6 +15,10 @@ export function createDesktopService() {
   let raceGeneration = 0;
   let raceBusy = false;
   let raceController = null;
+  let gomoku = createGomokuState();
+  let gomokuGeneration = 0;
+  let gomokuBusy = false;
+  let gomokuController = null;
 
   return {
     setKey(value) {
@@ -28,6 +34,7 @@ export function createDesktopService() {
     clearKey() {
       key = '';
       raceController?.abort();
+      gomokuController?.abort();
       return { ok: true };
     },
 
@@ -84,6 +91,61 @@ export function createDesktopService() {
         if (currentGeneration === raceGeneration) {
           raceBusy = false;
           raceController = null;
+        }
+      }
+    },
+
+    startGomoku() {
+      gomokuGeneration++;
+      gomokuController?.abort();
+      gomokuController = null;
+      gomokuBusy = false;
+      gomoku = createGomokuState();
+      return gomoku;
+    },
+
+    playGomokuMove(x, y) {
+      if (!Number.isInteger(x) || !Number.isInteger(y) || x < 0 || x >= 15 || y < 0 || y >= 15) {
+        throw new Error('五子棋落点无效。');
+      }
+      try {
+        gomoku = playGomokuMove(gomoku, 'player', x, y);
+        return gomoku;
+      } catch {
+        throw new Error('五子棋落点无效。');
+      }
+    },
+
+    async requestGomokuMove() {
+      if (!key) throw new Error('请先输入 Jev API Key。');
+      if (gomokuBusy) throw new Error('Jev 正在思考，请稍候。');
+      if (gomoku.turn !== 'jev' || gomoku.winner) throw new Error('当前不是 Jev 的回合。');
+      const currentGeneration = gomokuGeneration;
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 20_000);
+      gomokuController = controller;
+      gomokuBusy = true;
+      try {
+        const move = await requestJevGomokuMove(gomoku, key, { signal: controller.signal });
+        if (currentGeneration !== gomokuGeneration) throw new Error('对局已重开。');
+        gomoku = playGomokuMove(gomoku, 'jev', move.x, move.y);
+        return { state: gomoku, move };
+      } catch (error) {
+        if (currentGeneration !== gomokuGeneration) throw new Error('对局已重开。');
+        const message = error instanceof Error ? error.message : '';
+        if (controller.signal.aborted) throw new Error('Jev 连接超时或已取消，请重试。');
+        if (/\b(?:401|403)\b|invalid.*key|unauthori[sz]ed|无权|密钥无效/i.test(message)) {
+          throw new Error('Jev API key 无效或无权访问，请检查密钥。');
+        }
+        if (/\b429\b|quota|request limit|额度|限额/i.test(message)) {
+          throw new Error('Jev 今日额度已用完，请稍后再试。');
+        }
+        throw new Error('Jev 连接失败，请检查密钥或网络后重试。');
+      } finally {
+        clearTimeout(timeout);
+        if (currentGeneration === gomokuGeneration) {
+          gomokuBusy = false;
+          gomokuController = null;
         }
       }
     },

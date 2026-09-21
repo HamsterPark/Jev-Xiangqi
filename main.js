@@ -10,12 +10,12 @@ import {
 } from './assets/js/xiangqi-classic.js';
 
 const SERVICE_STORAGE_KEY = 'jev-xiangqi-service-url';
-// Shared with the other Jev game: use the same key and values on the same origin.
+// Shared with the other Jev games: use the same key and values on the same origin.
 const LANGUAGE_STORAGE_KEY = 'jev-games-language';
 const COPY = {
   zh: {
     pageTitle: '与 Jev 对弈 · 中国象棋', pageDescription: '执红先行，与 Jev 实时对弈中国象棋。每一步由 Jev 在合法着法中选择。',
-    brandName: '棋局实验室', gameNav: '游戏导航', xiangqiNav: '中国象棋', huarongdaoNav: 'Jev 玩华容道', huarongdaoRaceNav: '华容道赛跑', download: '下载 Windows 版',
+    brandName: '棋局实验室', gameNav: '游戏导航', xiangqiNav: '中国象棋', huarongdaoNav: 'Jev 玩华容道', huarongdaoRaceNav: '华容道赛跑', gomokuNav: '五子棋', download: '下载 Windows 版',
     heroFirst: '下一步，', heroSecond: '交给 Jev。', introWeb: '你执红棋先行。连接自己部署的 Jev 服务后，Jev 每回合从合法着法里作一次实时选择。将军、将死和困毙由棋局规则判定。',
     introDesktop: '你执红棋先行。输入自己的 Jev API key 后即可对弈，无需部署服务。将军、将死和困毙仍由本地规则判定。',
     arena: '中国象棋对弈', blackTag: '黑方 · 实时决策', riverChu: '楚 河', riverHan: '汉 界', board: '中国象棋棋盘', youShort: '你', you: '你', redTag: '红方 · 先行',
@@ -44,7 +44,7 @@ const COPY = {
   },
   en: {
     pageTitle: 'Play Xiangqi with Jev', pageDescription: 'Play Xiangqi as Red against Jev. Jev chooses each move from the legal options.',
-    brandName: 'Game Lab', gameNav: 'Game navigation', xiangqiNav: 'Xiangqi', huarongdaoNav: 'Jev Plays Huarong Dao', huarongdaoRaceNav: 'Huarong Dao Race', download: 'Download for Windows',
+    brandName: 'Game Lab', gameNav: 'Game navigation', xiangqiNav: 'Xiangqi', huarongdaoNav: 'Jev Plays Huarong Dao', huarongdaoRaceNav: 'Huarong Dao Race', gomokuNav: 'Gomoku', download: 'Download for Windows',
     heroFirst: 'Your move. ', heroSecond: 'Then Jev’s.', introWeb: 'You play Red and move first. Connect your own Jev service to let Jev choose each Black move in real time. Check, checkmate, and stalemate are enforced by the local rules.',
     introDesktop: 'You play Red and move first. Enter your own Jev API key to play without deploying a service. Check, checkmate, and stalemate are enforced locally.',
     arena: 'Xiangqi game', blackTag: 'Black · live decisions', riverChu: 'CHU RIVER', riverHan: 'HAN BORDER', board: 'Xiangqi board', youShort: 'You', you: 'You', redTag: 'Red · moves first',
@@ -186,6 +186,7 @@ serviceInput.value = apiEndpoint;
 serviceStateKey = apiEndpoint ? 'addressSaved' : 'disconnected';
 if (desktopMode) {
   document.querySelector('#downloadLink').hidden = true;
+  document.querySelector('#gomokuNav').hidden = false;
   document.querySelector('#huarongdaoNav').href = './race.html';
   serviceForm.hidden = true;
   desktopKeyForm.hidden = false;

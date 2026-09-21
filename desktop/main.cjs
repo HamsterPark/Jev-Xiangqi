@@ -5,8 +5,9 @@ const { app, BrowserWindow, ipcMain, net, protocol, session, shell } = require('
 const ROOT = path.resolve(__dirname, '..');
 const APP_URL = 'app://bundle/index.html';
 const RACE_URL = 'app://bundle/race.html';
+const GOMOKU_URL = 'app://bundle/gomoku.html';
 const EXTERNAL_HOSTS = new Set(['www.jevai.org', 'jevai.org', 'github.com', 'hamsterpark.github.io']);
-const APP_FILES = /^(?:index\.html|main\.js|piece-labels\.js|style\.css|service\.css|race\.html|race\.js|race\.css|favicon\.svg|assets\/js\/[a-z0-9-]+\.js)$/;
+const APP_FILES = /^(?:index\.html|main\.js|piece-labels\.js|style\.css|service\.css|race\.html|race\.js|race\.css|gomoku\.html|gomoku\.js|gomoku\.css|favicon\.svg|assets\/js\/[a-z0-9-]+\.js)$/;
 const MIME = Object.freeze({
   '.html': 'text/html; charset=utf-8',
   '.js': 'text/javascript; charset=utf-8',
@@ -48,7 +49,7 @@ function isTrustedSender(event) {
   const contents = mainWindow.webContents;
   const currentUrl = contents.getURL();
   return event.sender === contents && event.senderFrame === contents.mainFrame &&
-    (currentUrl === APP_URL || currentUrl === RACE_URL || currentUrl === 'app://bundle/');
+    (currentUrl === APP_URL || currentUrl === RACE_URL || currentUrl === GOMOKU_URL || currentUrl === 'app://bundle/');
 }
 
 function registerIpc() {
@@ -60,6 +61,9 @@ function registerIpc() {
     'jev:start-race': () => desktopService.startRace(),
     'jev:play-race-move': (moveId) => desktopService.playRaceMove(moveId),
     'jev:request-race-move': () => desktopService.requestRaceMove(),
+    'jev:start-gomoku': () => desktopService.startGomoku(),
+    'jev:play-gomoku-move': ({ x, y }) => desktopService.playGomokuMove(x, y),
+    'jev:request-gomoku-move': () => desktopService.requestGomokuMove(),
   };
   for (const [channel, action] of Object.entries(actions)) {
     ipcMain.handle(channel, async (event, value) => {
@@ -68,7 +72,7 @@ function registerIpc() {
         return { ok: true, value: await action(value) };
       } catch (error) {
         const message = error instanceof Error ? error.message : '';
-        const safe = /^(?:请输入|请先输入|Jev 正在思考|Jev 今日额度|Jev API key 无效|Jev 连接失败|棋局数据无效|华容道走法无效|当前不是 Jev 的回合|Jev 连接超时|对局已重开)/.test(message);
+        const safe = /^(?:请输入|请先输入|Jev 正在思考|Jev 今日额度|Jev API key 无效|Jev 连接失败|棋局数据无效|华容道走法无效|五子棋落点无效|当前不是 Jev 的回合|Jev 连接超时|对局已重开)/.test(message);
         return { ok: false, error: safe ? message : '操作失败，请重试。' };
       }
     });
@@ -100,7 +104,7 @@ function createWindow() {
     return { action: 'deny' };
   });
   window.webContents.on('will-frame-navigate', (details) => {
-    if (details.url === APP_URL || details.url === RACE_URL || details.url === 'app://bundle/') return;
+    if (details.url === APP_URL || details.url === RACE_URL || details.url === GOMOKU_URL || details.url === 'app://bundle/') return;
     details.preventDefault();
     if (details.isMainFrame) openExternalIfAllowed(details.url);
   });

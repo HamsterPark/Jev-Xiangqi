@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#132f2c" />
+    <title>Jev 五子棋</title>
+    <meta name="description" content="你执黑先行，在 15×15 棋盘上与 Jev 下五子棋。" />
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./gomoku.css" />
+    <script type="module" src="./gomoku.js"></script>
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="site-header">
+        <a class="brand" href="./index.html" data-i18n="brand">棋局实验室 <span>↗</span></a>
+        <nav aria-label="游戏导航" data-i18n-aria="navigation">
+          <a href="./index.html" data-i18n="xiangqi">中国象棋</a>
+          <a href="./race.html" data-i18n="race">华容道赛跑</a>
+          <a class="active" href="./gomoku.html" aria-current="page" data-i18n="gomoku">五子棋</a>
+          <button id="languageToggle" class="language-toggle" type="button" aria-label="Switch to English">EN</button>
+        </nav>
+      </header>
+
+      <main>
+        <section class="intro">
+          <p class="eyebrow"><span class="pulse"></span> JEV LIVE MATCH / GOMOKU</p>
+          <h1><span data-i18n="headlineStart">落下一子，</span><em data-i18n="headlineEnd">连成五颗。</em></h1>
+          <p data-i18n="intro">你执黑棋先行，Jev 执白棋。点击空交叉点落子；横、竖或斜线连成五颗及以上即获胜，无禁手。棋盘规则在本地运行，Jev 在线选择下一步。</p>
+        </section>
+
+        <section class="game-layout" aria-label="五子棋对局" data-i18n-aria="arena">
+          <section class="board-card" aria-labelledby="boardHeading">
+            <div class="board-heading">
+              <div><span class="side-kicker" data-i18n="boardKicker">15 × 15 棋盘</span><h2 id="boardHeading" data-i18n="boardHeading">一手黑，一手白。</h2></div>
+              <span id="turnPill" class="turn-pill" data-i18n="yourTurn">你的回合</span>
+            </div>
+            <div class="board-stage">
+              <div id="board" class="gomoku-board" role="grid" aria-label="五子棋棋盘" data-i18n-aria="boardLabel"></div>
+            </div>
+            <div class="board-bottom">
+              <span><i class="legend-stone black"></i><span data-i18n="youBlack">你 · 黑棋</span></span>
+              <span><i class="legend-stone white"></i><span data-i18n="jevWhite">Jev · 白棋</span></span>
+            </div>
+          </section>
+
+          <aside class="control-column">
+            <section class="status-card" aria-live="polite">
+              <div class="card-kicker" data-i18n="statusHeading">01 / 对局状态</div>
+              <div id="statusIcon" class="status-icon">●</div>
+              <h2 id="statusTitle">准备开局</h2>
+              <p id="statusDetail">正在载入棋盘。</p>
+              <div class="turn-track"><span id="playerTrack" class="track-item active" data-i18n="you">你</span><span class="track-arrow">→</span><span id="jevTrack" class="track-item">Jev</span></div>
+            </section>
+
+            <section class="control-card">
+              <div class="card-kicker" data-i18n="keyHeading">02 / 连接 Jev</div>
+              <form id="keyForm" hidden>
+                <label for="apiKey" data-i18n="keyLabel">你的 Jev API key（仅本次运行）</label>
+                <div class="key-row"><input id="apiKey" type="password" autocomplete="new-password" spellcheck="false" placeholder="输入自己的 Jev API key" data-i18n-placeholder="keyPlaceholder" required /><button id="saveKey" type="submit" data-i18n="useKey">使用 key</button></div>
+              </form>
+              <button id="clearKey" type="button" class="text-button" hidden data-i18n="clearKey">清除当前 key</button>
+              <p id="keyState" class="key-state">检查密钥状态中…</p>
+              <p class="fine-print"><span data-i18n="keyHelpBefore">还没有 key？打开 </span><a href="https://www.jevai.org/jev-api" target="_blank" rel="noopener noreferrer">Jev API Hub ↗</a><span data-i18n="keyHelpAfter"> 并点击 Get API Key。密钥只在本次桌面程序运行的内存中使用。</span></p>
+            </section>
+
+            <section class="control-card move-card">
+              <div class="card-kicker" data-i18n="moveHeading">03 / 落子</div>
+              <p id="moveHint" class="move-hint">轮到你时，点击一个空交叉点。第 1 手由黑棋先走。</p>
+              <div class="move-stat"><span data-i18n="moveCountLabel">已落子</span><strong id="moveCount">0</strong></div>
+              <div class="action-row"><button id="restart" type="button" class="secondary-button" data-i18n="restart">重新开局</button><button id="retry" type="button" class="primary-button" hidden data-i18n="retry">重试 Jev 这一步</button></div>
+              <p class="fine-print" data-i18n="failureNote">如果 Jev 请求失败，棋盘会停在 Jev 回合，不会自动代走。可以重试或重新开局。</p>
+            </section>
+          </aside>
+        </section>
+      </main>
+      <footer><span data-i18n="footer">本地规则判断落子与胜负 · Jev 在线从合法空位中选择</span> · <a href="https://www.jevai.org/jev-api" target="_blank" rel="noopener noreferrer">Jev API Hub ↗</a></footer>
+    </div>
+  </body>
+</html>

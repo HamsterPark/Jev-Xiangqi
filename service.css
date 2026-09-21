@@ -97,6 +97,7 @@
 
 .language-toggle:hover { background: #e7eee3; }
 .language-toggle:focus-visible { outline: 2px solid #1f654e; outline-offset: 2px; }
+.topbar nav a[hidden] { display: none !important; }
 
 @media (max-width: 600px) {
   .topbar { height: auto; min-height: 64px; align-items: flex-start; flex-direction: column; gap: 10px; padding: 13px 0; }
