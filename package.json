@@ -1,0 +1,11 @@
+{
+  "name": "jev-xiangqi",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test",
+    "check": "node --check main.js && node --check worker/src/index.js"
+  },
+  "engines": { "node": ">=20" }
+}

@@ -1,0 +1,15 @@
+{
+  "$schema": "https://unpkg.com/wrangler@latest/config-schema.json",
+  "name": "jev-games-move",
+  "main": "src/index.js",
+  "compatibility_date": "2026-09-01",
+  "secrets": { "required": ["JEV_API_KEY"] },
+  "vars": { "ALLOWED_ORIGINS": "https://hamsterpark.github.io" },
+  "ratelimits": [
+    {
+      "name": "MOVE_RATE_LIMITER",
+      "namespace_id": "101307",
+      "simple": { "limit": 120, "period": 60 }
+    }
+  ]
+}

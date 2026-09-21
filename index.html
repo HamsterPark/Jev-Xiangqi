@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#132f2c" />
+    <title>与 Jev 对弈 · 中国象棋</title>
+    <meta name="description" content="执红先行，与 Jev 实时对弈中国象棋。每一步由 Jev 在合法着法中选择。" />
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <header class="topbar">
+        <a class="brand" href="./">棋局实验室 <span>↗</span></a>
+        <nav aria-label="游戏导航">
+          <a class="active" href="./">中国象棋</a>
+          <a href="https://hamsterpark.github.io/Jev-Huarongdao/">Jev 玩华容道</a>
+        </nav>
+      </header>
+
+      <section class="intro">
+        <div class="eyebrow"><span class="pulse"></span> JEV LIVE MATCH</div>
+        <h1>下一步，<em>交给 Jev。</em></h1>
+        <p>你执红棋先行。Jev 每回合从合法着法里作一次实时选择。将军、将死和困毙由棋局规则判定。</p>
+      </section>
+
+      <section class="arena" aria-label="中国象棋对弈">
+        <div class="board-column">
+          <div class="player-tag black-tag"><span class="avatar">J</span><div><strong>Jev</strong><small>黑方 · 实时决策</small></div><span id="jevIndicator" class="turn-indicator"></span></div>
+          <div class="board-frame">
+            <div class="board-top-label">楚 河 <span>·</span> 汉 界</div>
+            <div id="board" class="board" role="grid" aria-label="中国象棋棋盘"></div>
+          </div>
+          <div class="player-tag red-tag"><span class="avatar">你</span><div><strong>你</strong><small>红方 · 先行</small></div><span id="humanIndicator" class="turn-indicator"></span></div>
+        </div>
+
+        <aside class="panel">
+          <div class="panel-heading"><span class="section-number">01 / 对局状态</span><span id="moveCount" class="move-count">第 1 回合</span></div>
+          <div class="status-card"><div id="statusIcon" class="status-icon">●</div><div><strong id="statusTitle">红方先行</strong><p id="statusText">点击一枚红棋，再点击高亮的落点。</p></div></div>
+          <div class="actions"><button id="newGame" type="button">重新开局</button><button id="undo" type="button" disabled>悔棋</button><button id="retry" type="button" hidden>重试 Jev 落子</button></div>
+          <div class="panel-heading second"><span class="section-number">02 / Jev 的选择</span><span class="live-dot">LIVE</span></div>
+          <div id="decision" class="decision-card"><p>等待你走出第一步。</p></div>
+          <p class="note">显示的是 Jev 对候选着法的选择倾向，不代表这步棋的胜率。</p>
+          <div class="panel-heading second"><span class="section-number">03 / 对局记录</span></div>
+          <ol id="moveLog" class="move-log"><li class="empty">开局待走</li></ol>
+        </aside>
+      </section>
+
+      <footer>棋盘规则在本地执行 · Jev 只选择黑方下一步 · <a href="https://www.jevai.org/docs" target="_blank" rel="noopener noreferrer">Jev API 文档 ↗</a></footer>
+    </main>
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>
