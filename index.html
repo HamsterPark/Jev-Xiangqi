@@ -8,6 +8,7 @@
     <meta name="description" content="执红先行，与 Jev 实时对弈中国象棋。每一步由 Jev 在合法着法中选择。" />
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="./style.css" />
+    <link rel="stylesheet" href="./service.css" />
   </head>
   <body>
     <main class="shell">
@@ -22,7 +23,7 @@
       <section class="intro">
         <div class="eyebrow"><span class="pulse"></span> JEV LIVE MATCH</div>
         <h1>下一步，<em>交给 Jev。</em></h1>
-        <p>你执红棋先行。Jev 每回合从合法着法里作一次实时选择。将军、将死和困毙由棋局规则判定。</p>
+        <p>你执红棋先行。连接自己部署的 Jev 服务后，Jev 每回合从合法着法里作一次实时选择。将军、将死和困毙由棋局规则判定。</p>
       </section>
 
       <section class="arena" aria-label="中国象棋对弈">
@@ -36,18 +37,24 @@
         </div>
 
         <aside class="panel">
-          <div class="panel-heading"><span class="section-number">01 / 对局状态</span><span id="moveCount" class="move-count">第 1 回合</span></div>
+          <div class="panel-heading"><span class="section-number">01 / 连接自己的 Jev 服务</span><span id="serviceState" class="move-count">未连接</span></div>
+          <form id="serviceForm" class="service-card">
+            <label for="serviceUrl">服务地址</label>
+            <div class="service-row"><input id="serviceUrl" type="url" inputmode="url" placeholder="https://你的服务地址/api/move" autocomplete="url" spellcheck="false" required /><button type="submit">使用此地址</button></div>
+            <p id="serviceHint">先按<a href="https://github.com/HamsterPark/Jev-Xiangqi#自行部署并对弈" target="_blank" rel="noopener noreferrer">部署说明 ↗</a>运行自己的服务，再把地址填在这里。Jev key 只存于你部署的服务中。</p>
+          </form>
+          <div class="panel-heading second"><span class="section-number">02 / 对局状态</span><span id="moveCount" class="move-count">第 1 回合</span></div>
           <div class="status-card"><div id="statusIcon" class="status-icon">●</div><div><strong id="statusTitle">红方先行</strong><p id="statusText">点击一枚红棋，再点击高亮的落点。</p></div></div>
           <div class="actions"><button id="newGame" type="button">重新开局</button><button id="undo" type="button" disabled>悔棋</button><button id="retry" type="button" hidden>重试 Jev 落子</button></div>
-          <div class="panel-heading second"><span class="section-number">02 / Jev 的选择</span><span class="live-dot">LIVE</span></div>
+          <div class="panel-heading second"><span class="section-number">03 / Jev 的选择</span><span class="live-dot">LIVE</span></div>
           <div id="decision" class="decision-card"><p>等待你走出第一步。</p></div>
           <p class="note">显示的是 Jev 对候选着法的选择倾向，不代表这步棋的胜率。</p>
-          <div class="panel-heading second"><span class="section-number">03 / 对局记录</span></div>
+          <div class="panel-heading second"><span class="section-number">04 / 对局记录</span></div>
           <ol id="moveLog" class="move-log"><li class="empty">开局待走</li></ol>
         </aside>
       </section>
 
-      <footer>棋盘规则在本地执行 · Jev 只选择黑方下一步 · <a href="https://www.jevai.org/docs" target="_blank" rel="noopener noreferrer">Jev API 文档 ↗</a></footer>
+      <footer>棋盘规则在本地执行 · Jev 只选择黑方下一步 · Jev key 保存在你自己的服务中 · <a href="https://www.jevai.org/docs" target="_blank" rel="noopener noreferrer">Jev API 文档 ↗</a></footer>
     </main>
     <script type="module" src="./main.js"></script>
   </body>

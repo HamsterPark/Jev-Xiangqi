@@ -1,0 +1,67 @@
+.service-card {
+  padding: 19px 20px;
+  border: 1px solid #d8ded0;
+  border-radius: 14px;
+  background: #fffefa;
+  box-shadow: 0 8px 22px #14321808;
+}
+
+.service-card label {
+  display: block;
+  margin-bottom: 9px;
+  color: #526a57;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.service-row {
+  display: flex;
+  gap: 8px;
+}
+
+.service-row input {
+  min-width: 0;
+  flex: 1;
+  padding: 11px 12px;
+  border: 1px solid #d1d9cb;
+  border-radius: 9px;
+  background: #f8faf5;
+  color: #254335;
+  font: 12px 'DM Mono', monospace;
+}
+
+.service-row input:focus {
+  outline: 2px solid #6d9a74;
+  outline-offset: 2px;
+}
+
+.service-row button {
+  flex: none;
+  padding: 0 13px;
+  border: 0;
+  border-radius: 9px;
+  background: #173d32;
+  color: #fff;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.service-card p {
+  margin: 12px 0 0;
+  color: #819184;
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+.service-card p a {
+  color: #3d7650;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+@media (max-width: 600px) {
+  .service-card { padding: 15px; }
+  .service-row { flex-direction: column; }
+  .service-row button { padding: 11px; }
+}

@@ -4,9 +4,10 @@ This Cloudflare Worker serves the public Xiangqi game. Its rules are bundled fro
 
 ## Deploy
 
-From this directory, create the secret in Cloudflare and then deploy:
+From this directory, log in, create your own secret in Cloudflare, and deploy:
 
 ```sh
+npx wrangler login
 npx wrangler secret put JEV_API_KEY
 npx wrangler deploy
 ```

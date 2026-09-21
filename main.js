@@ -9,8 +9,7 @@ import {
   isInClassicCheck,
 } from './assets/js/xiangqi-classic.js';
 
-// Set during deployment. Visitors never receive the Jev API key.
-const API_ENDPOINT = '';
+const SERVICE_STORAGE_KEY = 'jev-xiangqi-service-url';
 const boardElement = document.querySelector('#board');
 const statusTitle = document.querySelector('#statusTitle');
 const statusText = document.querySelector('#statusText');
@@ -20,6 +19,10 @@ const decisionElement = document.querySelector('#decision');
 const moveLog = document.querySelector('#moveLog');
 const retryButton = document.querySelector('#retry');
 const undoButton = document.querySelector('#undo');
+const serviceForm = document.querySelector('#serviceForm');
+const serviceInput = document.querySelector('#serviceUrl');
+const serviceState = document.querySelector('#serviceState');
+const serviceHint = document.querySelector('#serviceHint');
 
 let position;
 let turn;
@@ -32,6 +35,30 @@ let waiting = false;
 let connectionError = '';
 let generation = 0;
 let pendingController = null;
+let apiEndpoint = '';
+
+function normalizeEndpoint(value) {
+  const url = new URL(value.trim());
+  const local = ['localhost', '127.0.0.1'].includes(url.hostname);
+  if (url.protocol !== 'https:' && !(local && url.protocol === 'http:')) {
+    throw new Error('请输入 HTTPS 服务地址。');
+  }
+  if (url.username || url.password || url.search || url.hash) {
+    throw new Error('服务地址不能包含账号信息、参数或片段。');
+  }
+  if (url.pathname === '/' || !url.pathname) url.pathname = '/api/move';
+  if (url.pathname !== '/api/move') throw new Error('服务地址应以 /api/move 结尾。');
+  return url.href;
+}
+
+try {
+  const saved = localStorage.getItem(SERVICE_STORAGE_KEY);
+  if (saved) apiEndpoint = normalizeEndpoint(saved);
+} catch {
+  // Storage may be unavailable; the address can still be used in this tab.
+}
+serviceInput.value = apiEndpoint;
+serviceState.textContent = apiEndpoint ? '地址已保存' : '未连接';
 
 function snapshot() {
   return {
@@ -171,6 +198,8 @@ function render() {
       result.reason === 'checkmate' ? '将死，对局结束。' : result.reason === 'stalemate' ? '困毙，对局结束。' : '将被吃掉，对局结束。',
       isHuman ? '★' : '◆',
     );
+  } else if (!apiEndpoint) {
+    setStatus('先连接 Jev 服务', '按部署说明运行自己的服务，并在上方填入地址。', '◌');
   } else if (turn === BLACK) {
     setStatus(
       connectionError ? 'Jev 暂时没能落子' : waiting ? 'Jev 正在思考…' : '等待 Jev 落子',
@@ -227,7 +256,7 @@ async function askJev() {
     playMove(choices[0], BLACK);
     return;
   }
-  if (!API_ENDPOINT) {
+  if (!apiEndpoint) {
     connectionError = '网站需要先配置安全的服务端连接。';
     render();
     retryButton.hidden = false;
@@ -242,7 +271,7 @@ async function askJev() {
   const timeout = setTimeout(() => controller.abort(), 15000);
   render();
   try {
-    const response = await fetch(API_ENDPOINT, {
+    const response = await fetch(apiEndpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -279,6 +308,11 @@ async function askJev() {
 boardElement.addEventListener('click', (event) => {
   const cell = event.target.closest('.square');
   if (!cell || turn !== RED || result || waiting) return;
+  if (!apiEndpoint) {
+    serviceInput.focus();
+    setStatus('先连接 Jev 服务', '请输入你部署的服务地址。', '◌');
+    return;
+  }
   const x = Number(cell.dataset.x);
   const y = Number(cell.dataset.y);
   const piece = position.board[y][x];
@@ -294,6 +328,29 @@ boardElement.addEventListener('click', (event) => {
 });
 
 document.querySelector('#newGame').addEventListener('click', startGame);
+serviceForm.addEventListener('submit', (event) => {
+  event.preventDefault();
+  try {
+    apiEndpoint = normalizeEndpoint(serviceInput.value);
+    serviceInput.value = apiEndpoint;
+    serviceState.textContent = '地址已保存';
+    serviceHint.textContent = '地址已保存。Jev key 只保存在你部署的服务中，此页面不会接收密钥。';
+    try { localStorage.setItem(SERVICE_STORAGE_KEY, apiEndpoint); } catch { /* tab-only */ }
+    connectionError = '';
+    if (waiting) {
+      generation++;
+      pendingController?.abort();
+      pendingController = null;
+      waiting = false;
+    }
+    render();
+    if (turn === BLACK && !result) askJev();
+  } catch (error) {
+    serviceState.textContent = '地址无效';
+    serviceHint.textContent = error.message;
+    serviceInput.focus();
+  }
+});
 retryButton.addEventListener('click', askJev);
 undoButton.addEventListener('click', () => {
   if (waiting || history.length < 2) return;
