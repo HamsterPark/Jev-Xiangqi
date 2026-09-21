@@ -13,48 +13,56 @@
   <body>
     <main class="shell">
       <header class="topbar">
-        <a class="brand" href="./">棋局实验室 <span>↗</span></a>
-        <nav aria-label="游戏导航">
-          <a class="active" href="./">中国象棋</a>
-          <a href="https://hamsterpark.github.io/Jev-Huarongdao/">Jev 玩华容道</a>
+        <a class="brand" href="./"><span data-i18n="brandName">棋局实验室</span> <span>↗</span></a>
+        <nav aria-label="游戏导航" data-i18n-aria="gameNav">
+          <a class="active" href="./" data-i18n="xiangqiNav">中国象棋</a>
+          <a id="huarongdaoNav" href="https://hamsterpark.github.io/Jev-Huarongdao/" data-i18n="huarongdaoNav">Jev 玩华容道</a>
+          <a id="downloadLink" href="https://github.com/HamsterPark/Jev-Xiangqi/releases/download/v1.1.0/Jev-Games-1.1.0-x64-portable.exe" data-i18n="download">下载 Windows 版</a>
+          <button id="languageToggle" class="language-toggle" type="button" aria-label="Switch to English">EN</button>
         </nav>
       </header>
 
       <section class="intro">
         <div class="eyebrow"><span class="pulse"></span> JEV LIVE MATCH</div>
-        <h1>下一步，<em>交给 Jev。</em></h1>
-        <p>你执红棋先行。连接自己部署的 Jev 服务后，Jev 每回合从合法着法里作一次实时选择。将军、将死和困毙由棋局规则判定。</p>
+        <h1><span data-i18n="heroFirst">下一步，</span><em data-i18n="heroSecond">交给 Jev。</em></h1>
+        <p id="introText">你执红棋先行。连接自己部署的 Jev 服务后，Jev 每回合从合法着法里作一次实时选择。将军、将死和困毙由棋局规则判定。</p>
       </section>
 
-      <section class="arena" aria-label="中国象棋对弈">
+      <section class="arena" aria-label="中国象棋对弈" data-i18n-aria="arena">
         <div class="board-column">
-          <div class="player-tag black-tag"><span class="avatar">J</span><div><strong>Jev</strong><small>黑方 · 实时决策</small></div><span id="jevIndicator" class="turn-indicator"></span></div>
+          <div class="player-tag black-tag"><span class="avatar">J</span><div><strong>Jev</strong><small data-i18n="blackTag">黑方 · 实时决策</small></div><span id="jevIndicator" class="turn-indicator"></span></div>
           <div class="board-frame">
-            <div class="board-top-label">楚 河 <span>·</span> 汉 界</div>
-            <div id="board" class="board" role="grid" aria-label="中国象棋棋盘"></div>
+            <div class="board-top-label"><span data-i18n="riverChu">楚 河</span> <span>·</span> <span data-i18n="riverHan">汉 界</span></div>
+            <div id="board" class="board" role="grid" aria-label="中国象棋棋盘" data-i18n-aria="board"></div>
           </div>
-          <div class="player-tag red-tag"><span class="avatar">你</span><div><strong>你</strong><small>红方 · 先行</small></div><span id="humanIndicator" class="turn-indicator"></span></div>
+          <div class="player-tag red-tag"><span class="avatar" data-i18n="youShort">你</span><div><strong data-i18n="you">你</strong><small data-i18n="redTag">红方 · 先行</small></div><span id="humanIndicator" class="turn-indicator"></span></div>
         </div>
 
         <aside class="panel">
-          <div class="panel-heading"><span class="section-number">01 / 连接自己的 Jev 服务</span><span id="serviceState" class="move-count">未连接</span></div>
-          <form id="serviceForm" class="service-card">
-            <label for="serviceUrl">服务地址</label>
-            <div class="service-row"><input id="serviceUrl" type="url" inputmode="url" placeholder="https://你的服务地址/api/move" autocomplete="url" spellcheck="false" required /><button type="submit">使用此地址</button></div>
-            <p id="serviceHint">先按<a href="https://github.com/HamsterPark/Jev-Xiangqi#自行部署并对弈" target="_blank" rel="noopener noreferrer">部署说明 ↗</a>运行自己的服务，再把地址填在这里。Jev key 只存于你部署的服务中。</p>
+          <div class="panel-heading"><span id="connectionTitle" class="section-number">01 / 连接自己的 Jev 服务</span><span id="serviceState" class="move-count">未连接</span></div>
+          <form id="desktopKeyForm" class="service-card" hidden>
+            <label for="desktopKey" data-i18n="keyLabel">你的 Jev API key（仅本次运行使用）</label>
+            <div class="service-row"><input id="desktopKey" type="password" autocomplete="new-password" spellcheck="false" placeholder="输入自己的 Jev API key" data-i18n-placeholder="keyPlaceholder" required /><button type="submit" data-i18n="useKey">使用此 key</button></div>
+            <div class="desktop-key-actions"><button id="clearDesktopKey" type="button" hidden data-i18n="clearKey">清除 key</button></div>
+            <p id="desktopKeyHint"><span data-i18n="keyHintBefore">还没有 key？前往 </span><a href="https://www.jevai.org/jev-api" target="_blank" rel="noopener noreferrer">Jev API Hub ↗</a><span data-i18n="keyHintAfter">，点击 Get API Key。对弈需要联网；密钥只保存在本次运行的内存中，不会写入文件。</span></p>
           </form>
-          <div class="panel-heading second"><span class="section-number">02 / 对局状态</span><span id="moveCount" class="move-count">第 1 回合</span></div>
+          <form id="serviceForm" class="service-card">
+            <label for="serviceUrl" data-i18n="serviceLabel">服务地址</label>
+            <div class="service-row"><input id="serviceUrl" type="url" inputmode="url" placeholder="https://你的服务地址/api/move" data-i18n-placeholder="servicePlaceholder" autocomplete="url" spellcheck="false" required /><button type="submit" data-i18n="useAddress">使用此地址</button></div>
+            <p id="serviceHint"><span data-i18n="serviceHintBefore">先按</span><a id="deployLink" href="https://github.com/HamsterPark/Jev-Xiangqi/blob/main/worker/README.md" target="_blank" rel="noopener noreferrer" data-i18n="deployGuide">部署说明 ↗</a><span data-i18n="serviceHintAfter">运行自己的服务，再把地址填在这里。Jev key 只存于你部署的服务中。</span></p>
+          </form>
+          <div class="panel-heading second"><span class="section-number" data-i18n="gameStatusHeading">02 / 对局状态</span><span id="moveCount" class="move-count">第 1 回合</span></div>
           <div class="status-card"><div id="statusIcon" class="status-icon">●</div><div><strong id="statusTitle">红方先行</strong><p id="statusText">点击一枚红棋，再点击高亮的落点。</p></div></div>
-          <div class="actions"><button id="newGame" type="button">重新开局</button><button id="undo" type="button" disabled>悔棋</button><button id="retry" type="button" hidden>重试 Jev 落子</button></div>
-          <div class="panel-heading second"><span class="section-number">03 / Jev 的选择</span><span class="live-dot">LIVE</span></div>
+          <div class="actions"><button id="newGame" type="button" data-i18n="newGame">重新开局</button><button id="undo" type="button" disabled data-i18n="undo">悔棋</button><button id="retry" type="button" hidden data-i18n="retry">重试 Jev 落子</button></div>
+          <div class="panel-heading second"><span class="section-number" data-i18n="decisionHeading">03 / Jev 的选择</span><span class="live-dot">LIVE</span></div>
           <div id="decision" class="decision-card"><p>等待你走出第一步。</p></div>
-          <p class="note">显示的是 Jev 对候选着法的选择倾向，不代表这步棋的胜率。</p>
-          <div class="panel-heading second"><span class="section-number">04 / 对局记录</span></div>
+          <p class="note" data-i18n="decisionNote">显示的是 Jev 对候选着法的选择倾向，不代表这步棋的胜率。</p>
+          <div class="panel-heading second"><span class="section-number" data-i18n="logHeading">04 / 对局记录</span></div>
           <ol id="moveLog" class="move-log"><li class="empty">开局待走</li></ol>
         </aside>
       </section>
 
-      <footer>棋盘规则在本地执行 · Jev 只选择黑方下一步 · Jev key 保存在你自己的服务中 · <a href="https://www.jevai.org/docs" target="_blank" rel="noopener noreferrer">Jev API 文档 ↗</a></footer>
+      <footer><span id="footerText">棋盘规则在本地执行 · Jev 只选择黑方下一步 · Jev key 保存在你自己的服务中</span> · <a href="https://www.jevai.org/docs" target="_blank" rel="noopener noreferrer" data-i18n="apiDocs">Jev API 文档 ↗</a></footer>
     </main>
     <script type="module" src="./main.js"></script>
   </body>

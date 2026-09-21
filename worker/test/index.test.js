@@ -82,6 +82,21 @@ test('maps Jev daily quota responses to a safe public 429', async () => {
   }
 });
 
+test('maps upstream authentication failure to a safe public 401', async () => {
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async () => new Response('private authentication details', { status: 403 });
+  try {
+    const response = await request(xiangqiInput());
+    assert.equal(response.status, 401);
+    const body = await response.text();
+    assert.deepEqual(JSON.parse(body), { error: 'Jev API key 无效或无权访问，请检查密钥。' });
+    assert.equal(body.includes('private authentication details'), false);
+    assert.equal(body.includes(ENV.JEV_API_KEY), false);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
 test('blocks unapproved origins and applies rate limit', async () => {
   const other = await request(xiangqiInput(), { headers: { Origin: 'https://attacker.example' } });
   assert.equal(other.status, 403);

@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#132f2c" />
+    <title>Jev 华容道赛跑</title>
+    <meta name="description" content="与 Jev 从同一华容道开局出发，轮流移动一格，争先让曹操到达出口。" />
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./race.css" />
+    <script type="module" src="./race.js"></script>
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="site-header">
+        <a class="brand" href="./index.html" data-i18n="brand">棋局实验室 <span>↗</span></a>
+        <nav aria-label="游戏导航" data-i18n-aria="navigation">
+          <a href="./index.html" data-i18n="xiangqi">中国象棋</a>
+          <a class="active" href="./race.html" aria-current="page" data-i18n="race">华容道赛跑</a>
+          <button id="languageToggle" type="button" class="language-toggle" aria-label="Switch to English">EN</button>
+        </nav>
+      </header>
+
+      <main>
+        <section class="intro">
+          <p class="eyebrow"><span class="pulse"></span> JEV RACE / HUARONG DAO</p>
+          <h1><span data-i18n="headlineStart">同一起点，</span><em data-i18n="headlineEnd">谁先突围？</em></h1>
+          <p data-i18n="intro">你和 Jev 各有一块独立的华容道棋盘，从相同的“横刀立马”开局出发。你先走，双方严格轮流，每回合只滑动一枚棋子一格。先让曹操到达底部中央出口的一方获胜。</p>
+          <p class="guidance" data-i18n="guidance">Jev 的候选走法由离线最短路径引导，再由 Jev 在其中选择；这是路径引导的对手，不是无辅助解题。</p>
+        </section>
+
+        <section class="game-layout" aria-label="华容道双棋盘赛跑" data-i18n-aria="arena">
+          <section class="board-card jev-card" aria-labelledby="jevHeading">
+            <div class="board-heading">
+              <div><span class="side-kicker" data-i18n="leftBoard">左侧棋盘</span><h2 id="jevHeading">Jev</h2></div>
+              <span id="jevTurn" class="turn-pill" data-i18n="waiting">等待</span>
+            </div>
+            <div class="board-stage"><div class="board-frame"><div id="jevBoard" class="puzzle-board" role="img" aria-label="Jev 的华容道棋盘"></div><div class="exit-mark" data-i18n="exit">出 口</div></div></div>
+            <div class="board-bottom"><span data-i18n="guidedJev">最短路径引导的 Jev</span><strong id="jevMoveCount">0</strong></div>
+            <p id="jevLastMove" class="last-move" aria-live="polite">—</p>
+          </section>
+
+          <section class="board-card player-card" aria-labelledby="playerHeading">
+            <div class="board-heading">
+              <div><span class="side-kicker" data-i18n="rightBoard">右侧棋盘</span><h2 id="playerHeading" data-i18n="you">你</h2></div>
+              <span id="playerTurn" class="turn-pill active" data-i18n="yourTurn">你的回合</span>
+            </div>
+            <div class="board-stage"><div class="board-frame"><div id="playerBoard" class="puzzle-board" role="group" aria-label="你的华容道棋盘"></div><div class="exit-mark" data-i18n="exit">出 口</div></div></div>
+            <div class="board-bottom"><span data-i18n="yourSteps">你的步数</span><strong id="playerMoveCount">0</strong></div>
+            <p id="playerLastMove" class="last-move" aria-live="polite">—</p>
+          </section>
+
+          <aside class="control-column">
+            <section class="status-card" aria-live="polite">
+              <div class="card-kicker" data-i18n="statusHeading">01 / 赛跑状态</div>
+              <div id="statusIcon" class="status-icon">●</div>
+              <h2 id="statusTitle">准备开局</h2>
+              <p id="statusDetail">载入两块相同的棋盘。</p>
+              <div class="turn-track"><span id="playerTrack" class="track-item active" data-i18n="you">你</span><span class="track-arrow">→</span><span id="jevTrack" class="track-item">Jev</span></div>
+            </section>
+
+            <section id="keyCard" class="control-card">
+              <div class="card-kicker" data-i18n="keyHeading">02 / 连接 Jev</div>
+              <form id="keyForm">
+                <label for="apiKey" data-i18n="keyLabel">你的 Jev API key（仅本次运行）</label>
+                <div class="key-row"><input id="apiKey" type="password" autocomplete="new-password" spellcheck="false" data-i18n-placeholder="keyPlaceholder" placeholder="输入自己的 Jev API key" required /><button id="saveKey" type="submit" data-i18n="useKey">使用 key</button></div>
+              </form>
+              <button id="clearKey" type="button" class="text-button" hidden data-i18n="clearKey">清除当前 key</button>
+              <p id="keyState" class="key-state">检查密钥状态中…</p>
+              <p class="fine-print"><span data-i18n="keyHelpBefore">还没有 key？打开 </span><a href="https://www.jevai.org/jev-api" target="_blank" rel="noopener noreferrer">Jev API Hub ↗</a><span data-i18n="keyHelpAfter"> 并点击 Get API Key。密钥不会写入此页面或文件。</span></p>
+            </section>
+
+            <section class="control-card">
+              <div class="card-kicker" data-i18n="moveHeading">03 / 移动棋子</div>
+              <p id="moveHint" class="move-hint">先在右侧棋盘选择一枚棋子，再点击可用方向。每次只移动一格。</p>
+              <div class="direction-pad" role="group" aria-label="移动方向" data-i18n-aria="directions">
+                <button type="button" data-direction="U" aria-label="向上移动" data-i18n-aria="moveUp">↑</button>
+                <button type="button" data-direction="L" aria-label="向左移动" data-i18n-aria="moveLeft">←</button>
+                <button type="button" data-direction="D" aria-label="向下移动" data-i18n-aria="moveDown">↓</button>
+                <button type="button" data-direction="R" aria-label="向右移动" data-i18n-aria="moveRight">→</button>
+              </div>
+              <p class="keyboard-hint" data-i18n="keyboardHint">选中棋子后也可使用键盘方向键。</p>
+              <div class="action-row"><button id="restart" type="button" class="secondary-button" data-i18n="restart">重新开局</button><button id="retry" type="button" class="primary-button" hidden data-i18n="retry">重试 Jev 这一步</button></div>
+              <p class="fine-print" data-i18n="failureNote">如果 Jev 请求失败，比赛会停在 Jev 回合；不会自动代走。可重试或重新开局。</p>
+            </section>
+          </aside>
+        </section>
+      </main>
+      <footer><span data-i18n="footer">本地规则判断合法移动与胜负 · Jev 在线选择路径引导的候选步骤</span> · <a href="https://www.jevai.org/jev-api" target="_blank" rel="noopener noreferrer">Jev API Hub ↗</a></footer>
+    </div>
+  </body>
+</html>

@@ -7,6 +7,7 @@ const CLASSIC_META = createInitialPosition({ width: 9, height: 10 }).meta;
 const MAX_REQUEST_BYTES = 16 * 1024;
 const MAX_JEV_BYTES = 32 * 1024;
 const JEV_QUOTA_ERROR = 'Jev 今日额度已用完，请稍后再试';
+const JEV_AUTH_ERROR = 'Jev API key 无效或无权访问，请检查密钥。';
 const CLASSIC_TYPES = new Set(['g', 'a', 'e', 'h', 'r', 'c', 'p']);
 const XIANGQI_NAMES = Object.freeze({ g: '将', a: '士', e: '象', h: '马', r: '车', c: '炮', p: '兵' });
 
@@ -150,6 +151,7 @@ async function askJev(env, modelState, criteria, instructions, history) {
     return json({ error: 'Jev is temporarily unavailable' }, 502);
   }
   if (upstream.status === 429) return json({ error: JEV_QUOTA_ERROR }, 429);
+  if (upstream.status === 401 || upstream.status === 403) return json({ error: JEV_AUTH_ERROR }, 401);
   if (!upstream.ok) return json({ error: 'Jev request failed' }, 502);
   let result;
   try {

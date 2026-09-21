@@ -60,7 +60,49 @@
   text-underline-offset: 2px;
 }
 
+.desktop-key-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 9px;
+}
+
+.desktop-key-actions button {
+  border: 1px solid #d1d9cb;
+  border-radius: 8px;
+  background: #f8faf5;
+  color: #526a57;
+  cursor: pointer;
+  font-size: 11px;
+  padding: 6px 10px;
+}
+
+.desktop-key-actions button[hidden],
+.service-card[hidden] {
+  display: none;
+}
+
+.language-toggle {
+  align-self: center;
+  padding: 6px 9px;
+  border: 1px solid #b9c9b8;
+  border-radius: 7px;
+  background: transparent;
+  color: #345345;
+  cursor: pointer;
+  font: 500 12px 'DM Mono', monospace;
+  white-space: nowrap;
+}
+
+.brand span:first-child { font: inherit; color: inherit; }
+
+.language-toggle:hover { background: #e7eee3; }
+.language-toggle:focus-visible { outline: 2px solid #1f654e; outline-offset: 2px; }
+
 @media (max-width: 600px) {
+  .topbar { height: auto; min-height: 64px; align-items: flex-start; flex-direction: column; gap: 10px; padding: 13px 0; }
+  .topbar nav { flex-wrap: wrap; gap: 8px 16px; }
+  .topbar nav a { padding: 0 0 4px; }
+  .language-toggle { align-self: flex-start; padding: 3px 8px; }
   .service-card { padding: 15px; }
   .service-row { flex-direction: column; }
   .service-row button { padding: 11px; }
